@@ -5,9 +5,9 @@ function Header(){
     
     return (
         <div className="Header">
-            <Navbar fixed="top" dark color ="dark">
+            <Navbar fixed="top" dark color ="dark" >
               <div className="container">
-                <NavbarBrand >Wings2Life</NavbarBrand>
+                <NavbarBrand >SkillPill</NavbarBrand>
               </div>
             </Navbar>
         </div>
