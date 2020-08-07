@@ -5,13 +5,9 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-const config = {
-  apiUrl: "https://ix61k6qun9.execute-api.ap-southeast-1.amazonaws.com/prod/lifetoolsdataset?category=Baselines"
-};
-
 ReactDOM.render(
   <React.StrictMode>
-    <App api={config}/>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
