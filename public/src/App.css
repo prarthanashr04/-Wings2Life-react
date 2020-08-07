@@ -4,16 +4,6 @@
 body {
   background-color: hsl(0,0%,80%);
 }
-.btngrp {
-  width: 350px;
-  background-color: rgb(219, 101, 55);
-  color: white;
-  margin:10px;
-}
-#btn_grp{
-  padding-top: 150px;
-  padding-bottom: 150px;
-}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
