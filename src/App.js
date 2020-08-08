@@ -15,41 +15,47 @@ var configuration = {
                    {count:6, rule: "exact"}]
 }
 $("#favlogo").attr('href',configuration.icon);
+class ItemButton extends Component {
+  render() {
+    const meaning=this.props.Meaning;
+    return (
+      <Button className="itemButton" color='primary'>{meaning}</Button>
+    )
+  }
+}
+class DataSet extends Component {
+  render() {
+    const rows = [];
+    let i;
+    let item=this.props.item;
+    for (i=0;i<item.length;i++)
+    {
+      rows.push(
+      <ItemButton Meaning={item[i].Meaning} />
+      );
+    }
+    return <div className="itemGroup">{rows}</div>
+  }
+}
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       modal: true
     };
-
-
     this.toggle = this.toggle.bind(this);
+    this.item=[];
   }
-
+  componentDidMount() {
+    const apiUrl = this.props.api.apiUrl;
+    fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => this.setState(this.item=data));
+  }
   toggle() {
     this.setState({
       modal: !this.state.modal
     });
-  }
-  async getContacts() {
-    try {
-      this.setState({loading: true});
-      let response = await fetch(this.props.api.apiUrl);
-      let responseJson = [];
-      try {
-        responseJson = await response.json();
-        this.setState({ 
-          contacts: responseJson,
-          selectedContact: this.emptyContact,
-          loading: false
-        });
-      } catch (error) {
-        console.log(error);
-        responseJson = [];
-      }
-    } catch (error) {
-      console.log(error);
-    }
   }
   render() {
     return <div>
@@ -68,6 +74,7 @@ class App extends Component {
             <Button color='secondary' onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>
+        <DataSet item={this.item} />
         <div className="Footer">
             <Navbar fixed="bottom" dark color="dark" text="light">
                 <Button variant="dark" type="submit" size="lg" block>Submit</Button>
