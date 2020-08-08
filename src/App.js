@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './App.css';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter,Navbar,NavbarBrand } from 'reactstrap';
 import $ from 'jquery';
+const green = '#39D1B4';
+const blue = '#61dafb';
 var level=1;
 var configuration = {
 	branding: {"name" : "SkillPill" },
@@ -15,11 +17,22 @@ var configuration = {
                    {count:6, rule: "exact"}]
 }
 $("#favlogo").attr('href',configuration.icon);
+
+
 class ItemButton extends Component {
+  constructor(props){
+    super(props);
+    this.state = { color: green };
+    this.changeColor = this.changeColor.bind(this);
+  }
+  changeColor(){
+    const newColor = this.state.color == blue ? green : blue;
+    this.setState({ color: newColor });
+  };
   render() {
     const meaning=this.props.Meaning;
     return (
-      <Button className="itemButton" color='primary'>{meaning}</Button>
+      <Button className="itemButton"  style={{background: this.state.color}} onClick={this.changeColor} color='primary'>{meaning}</Button>
     )
   }
 }
@@ -32,11 +45,15 @@ class DataSet extends Component {
     {
       rows.push(
       <ItemButton Meaning={item[i].Meaning} />
+
       );
     }
     return <div className="itemGroup">{rows}</div>
   }
 }
+
+
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -46,6 +63,8 @@ class App extends Component {
     this.toggle = this.toggle.bind(this);
     this.item=[];
   }
+
+  
   componentDidMount() {
     const apiUrl = this.props.api.apiUrl;
     fetch(apiUrl)
@@ -57,6 +76,8 @@ class App extends Component {
       modal: !this.state.modal
     });
   }
+
+  
   render() {
     return <div>
     <div className="Header" >
