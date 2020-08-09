@@ -1,11 +1,8 @@
 import React,{ useState,Component } from 'react';
-import ReactDOM from 'react-dom';
 import './App.css';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter,Navbar,NavbarBrand } from 'reactstrap';
 import $ from 'jquery';
-const green = '#39D1B4';
-const blue = '#61dafb';
-var level=1;
+var level=1,selected=0;
 var configuration = {
 	branding: {"name" : "SkillPill" },
 	title: "Values",
@@ -17,35 +14,32 @@ var configuration = {
                    {count:6, rule: "exact"}]
 }
 $("#favlogo").attr('href',configuration.icon);
-
-
-class ItemButton extends Component {
-  constructor(props){
-    super(props);
-    this.state = { color: green };
-    this.changeColor = this.changeColor.bind(this);
-  }
-  changeColor(){
-    const newColor = this.state.color == blue ? green : blue;
-    this.setState({ color: newColor });
-  };
-  render() {
-    const meaning=this.props.Meaning;
-    return (
-      <Button className="itemButton"  style={{background: this.state.color}} onClick={this.changeColor} color='primary'>{meaning}</Button>
-    )
-  }
+function DataButton(props) {
+  return (
+    <Button className="itemButton" id={props.idButton} onClick={props.onClick}>{props.value}</Button>
+  );
 }
 class DataSet extends Component {
+  renderButton(i){
+    let item=this.props.item;
+    let idButton="qual_"+i;
+    return (
+      <DataButton
+          idButton={idButton}
+          value={item[i].Meaning}
+          onClick={() => this.props.onClick(i)}
+        />
+    )
+  }
   render() {
     const rows = [];
     let i;
     let item=this.props.item;
+
     for (i=0;i<item.length;i++)
     {
       rows.push(
-      <ItemButton Meaning={item[i].Meaning} />
-
+        this.renderButton(i)
       );
     }
     return <div className="itemGroup">{rows}</div>
@@ -69,13 +63,31 @@ class App extends Component {
     const apiUrl = this.props.api.apiUrl;
     fetch(apiUrl)
       .then((response) => response.json())
-      .then((data) => this.setState(this.item=data));
+      .then((data) => this.setState(this.item=data,console.log(data)));
   }
   toggle() {
     this.setState({
       modal: !this.state.modal
     });
   }
+  updateSelection(i) {
+    var property = document.getElementById('qual_'+i);
+    if(configuration.levelDetails[level-1].rule=="exact" && this.item[i].Status==0 && configuration.levelDetails[level-1].count==selected)
+    return;
+    if(this.item[i].Status==0)
+    {   property.style.backgroundColor="#00cc00"
+        this.item[i].Status=1;
+        selected++;
+        //$("#currentCount").text(selected+levelCount());
+    }
+    else if(this.item[i].Status==1)
+    {
+        property.style.backgroundColor="#0000FF"
+        this.item[i].Status=0;
+        selected--;
+        //$("#currentCount").text(selected+levelCount());
+    }
+}
 
   
   render() {
@@ -95,7 +107,7 @@ class App extends Component {
             <Button color='secondary' onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>
-        <DataSet item={this.item} />
+        <DataSet item={this.item} onClick={i => this.updateSelection(i)}/>
         <div className="Footer">
             <Navbar fixed="bottom" dark color="dark" text="light">
                 <Button variant="dark" type="submit" size="lg" block>Submit</Button>
