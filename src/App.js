@@ -9,9 +9,9 @@ var configuration = {
 	category: "Baselines",
 	icon: "./skillpill.png",
 	url: "https://ix61k6qun9.execute-api.ap-southeast-1.amazonaws.com/prod/lifetoolsdataset",
-	levelDetails: [{count:24 ,rule: "minimum" }, 
-				   {count:12, rule: "exact"},
-                   {count:6, rule: "exact"}]
+	levelDetails: [{count:2 ,rule: "minimum" }, 
+				   {count:1, rule: "exact"},
+                   {count:1, rule: "exact"}]
 }
 $("#favlogo").attr('href',configuration.icon);
 function DataButton(props) {
@@ -38,9 +38,11 @@ class DataSet extends Component {
 
     for (i=0;i<item.length;i++)
     {
-      rows.push(
+      if(item[i].Level==level){
+        rows.push(
         this.renderButton(i)
-      );
+        );
+      }
     }
     return <div className="itemGroup">{rows}</div>
   }
@@ -52,18 +54,18 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modal: true
+      modal: true,
+      item:[]    
     };
     this.toggle = this.toggle.bind(this);
-    this.item=[];
   }
 
-  
+
   componentDidMount() {
     const apiUrl = this.props.api.apiUrl;
     fetch(apiUrl)
       .then((response) => response.json())
-      .then((data) => this.setState(this.item=data,console.log(data)));
+      .then((data) => this.setState(this.state.item=data,console.log(data)));
   }
   toggle() {
     this.setState({
@@ -72,22 +74,41 @@ class App extends Component {
   }
   updateSelection(i) {
     var property = document.getElementById('qual_'+i);
-    if(configuration.levelDetails[level-1].rule=="exact" && this.item[i].Status==0 && configuration.levelDetails[level-1].count==selected)
+    if(configuration.levelDetails[level-1].rule=="exact" && this.state.item[i].Status==0 && configuration.levelDetails[level-1].count==selected)
     return;
-    if(this.item[i].Status==0)
+    if(this.state.item[i].Status==0)
     {   property.style.backgroundColor="#00cc00"
-        this.item[i].Status=1;
+        this.state.item[i].Status=1;
         selected++;
         //$("#currentCount").text(selected+levelCount());
     }
-    else if(this.item[i].Status==1)
+    else if(this.state.item[i].Status==1)
     {
         property.style.backgroundColor="#0000FF"
-        this.item[i].Status=0;
+        this.state.item[i].Status=0;
         selected--;
         //$("#currentCount").text(selected+levelCount());
     }
-}
+  }
+  levelCheck = () => {
+    if(configuration.levelDetails[level-1].rule=="minimum" && configuration.levelDetails[level-1].count<=selected)
+    {
+         return "true";
+    }
+     else if(configuration.levelDetails[level-1].rule=="exact" && configuration.levelDetails[level-1].count==selected)
+    {
+        return "true";
+    }
+    else
+    return "false";
+  }
+  submit = () => {
+    console.log(this.state.item);
+    if (this.levelCheck()=="true")
+    {
+      console.log("test"); 
+    }
+  }
 
   
   render() {
@@ -107,10 +128,12 @@ class App extends Component {
             <Button color='secondary' onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>
-        <DataSet item={this.item} onClick={i => this.updateSelection(i)}/>
+        <DataSet item={this.state.item} onClick={i => this.updateSelection(i)}/>
         <div className="Footer">
+
+
             <Navbar fixed="bottom" dark color="dark" text="light">
-                <Button variant="dark" type="submit" size="lg" block>Submit</Button>
+                <Button onClick={this.submit} variant="dark" size="lg" block>Submit</Button>
             </Navbar>
         </div>
     </div>
